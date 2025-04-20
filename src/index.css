@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+    --font-display: "Satoshi", "sans-serif";
+    --breakpoint-3xl: 120rem;
+    --color-primary: oklch(0.16 0.02 262.62);
+    --color-secondary: oklch(0.27 0.03 262.95);
+    --color-tertiary: oklch(0.17 0.02 262.83);
+    --color-background: oklch(0.95 0.01 262.62);
+    --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+    --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+    /* ... */
+  }
+
+body {
+  background-color: var(--color-background);
+}
+
+.full-vh {
+  height: 100vh;
+}

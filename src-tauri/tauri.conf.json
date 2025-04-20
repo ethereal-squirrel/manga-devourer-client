@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Manga Devourer",
+  "version": "0.1.1",
+  "identifier": "app.devourer.manga",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Manga Devourer",
+        "width": 1920,
+        "height": 1080
+      }
+    ],
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      },
+      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost *; connect-src ipc: http://ipc.localhost *"
+    },
+    "withGlobalTauri": true
+  },
+  "plugins": {
+    "sql": {
+      "preload": ["sqlite:library.db"]
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["manga-devourer", "app.devourer.manga"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "Entertainment",
+    "targets": "all",
+    "iOS": {
+      "developmentTeam": "RU4YWG83QV"
+    }
+  }
+}
