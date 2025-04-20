@@ -1,0 +1,68 @@
+name: Build and Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number for the release (e.g., v1.0.0)"
+        required: true
+        type: string
+      release_notes:
+        description: "Release notes"
+        required: true
+        type: string
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm i
+      - run: npm run tauri build
+      - name: Rename Windows executable
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}" -replace '^v',''
+          Move-Item "src-tauri/target/release/bundle/msi/*.msi" "manga-devourer-client-win-$version.msi"
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-executable
+          path: executables/manga-devourer-client-win-*.msi
+          retention-days: 1
+
+  create-release:
+    needs: [build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Debug artifacts
+        run: |
+          echo "Artifacts directory contents:"
+          ls -R artifacts/
+
+      - name: Set version without v prefix
+        id: version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          version=${version#v}
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          body: ${{ github.event.inputs.release_notes }}
+          files: |
+            artifacts/win-executable/manga-devourer-client-win-${{ steps.version.outputs.VERSION }}.msi
